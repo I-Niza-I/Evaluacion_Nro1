@@ -4,6 +4,7 @@ public class Collectible : MonoBehaviour
 {
     [SerializeField] private int value = 1;
     private GameController gc;
+    private bool isCollected = false;
 
     void Start()
     {
@@ -12,7 +13,11 @@ public class Collectible : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
+        if (isCollected) return;
+
         if (!col.CompareTag("Player")) return;
+
+        isCollected = true;
 
         if (CompareTag("Reward"))
         {
