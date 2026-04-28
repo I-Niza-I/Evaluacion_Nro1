@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class EndLevel : MonoBehaviour
@@ -17,17 +18,15 @@ public class EndLevel : MonoBehaviour
         if (!gc.CanFinishLevel())
         {
             Debug.Log("Faltan dinos por derrotar!");
-            gc.FlashDinosRed();
+            gc.FlashDinosCount();
             return;
         }
 
         if (CompareTag("EndLevel"))
         {
-            SceneManager.LoadScene("Menu");
-        }
-        else if (CompareTag("EndGame"))
-        {
-            SceneManager.LoadScene("Stage2");
+            gc.WinLevel();
         }
     }
+
+   
 }

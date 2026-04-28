@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Net.NetworkInformation;
 
 
 public class GameController : MonoBehaviour
@@ -18,8 +19,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private float leftBound;
     [SerializeField] private float rightBound;
     [SerializeField] private int totalDinos = 0;
+    [SerializeField] private int totalPoints = 0;
 
-    private bool isFlashingDinos = false;
+    private bool isFlashingCount = false;
 
 
     private AudioSource audioSource;
@@ -28,6 +30,7 @@ public class GameController : MonoBehaviour
     private Text points;
     private Text dinos;
     private GameObject gameOver;
+    private GameObject winScreen;
     private int livesNum = 0;
     private int pointsNum = 0;
     private int dinosNum = 0;
@@ -47,11 +50,13 @@ public class GameController : MonoBehaviour
         points = gameUI.transform.Find("Rewards").gameObject.GetComponent<Text>();
         dinos = gameUI.transform.Find("Dinos").gameObject.GetComponent<Text>();
         gameOver = gameUI.transform.Find("GameOver").gameObject;
+        winScreen = gameUI.transform.Find("WinScreen").gameObject;
 
         lives.text = livesNum.ToString();
         points.text = pointsNum.ToString();
         dinos.text = dinosNum.ToString();
         gameOver.SetActive(false);
+        winScreen.SetActive(false);
     }
 
     public GameObject GetPlayer()
@@ -79,6 +84,19 @@ public class GameController : MonoBehaviour
         }
 
         return livesNum;
+    }
+
+    public void WinLevel()
+    {
+        Debug.Log("GAME OVER");
+
+        winScreen.SetActive(true);
+
+        // Detiene el tiempo
+        Time.timeScale = 0f;
+
+        player.GetComponent<Player_Movement>().enabled = false;
+
     }
 
     public void GameOver()
@@ -146,29 +164,36 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void FlashDinosRed()
+    public void FlashDinosCount()
     {
-        if (!isFlashingDinos)
+        if (!isFlashingCount)
         {
-            StartCoroutine(FlashDinosCoroutine());
+            StartCoroutine(FlashCountCoroutine());
         }
             
     }
-    private IEnumerator FlashDinosCoroutine()
-{
-    isFlashingDinos = true;
+    private IEnumerator FlashCountCoroutine()
+    {
+        isFlashingCount = true;
+        if(pointsNum < totalPoints)
+        {
+            points.color = Color.red;
+        }
+        if(dinosNum < totalDinos)
+        {
+            dinos.color = Color.red;
+        }
+        
 
-    Color originalColor = dinos.color;
+        yield return new WaitForSeconds(1f);
 
-    dinos.color = Color.red;
-    yield return new WaitForSeconds(1f);
+        dinos.color =  Color.white;
+        points.color = Color.white;
 
-    dinos.color =  Color.white;
-
-    isFlashingDinos = false;
-}
+        isFlashingCount = false;
+    }
     public bool CanFinishLevel()
     {
-        return dinosNum >= totalDinos;
+        return dinosNum >= totalDinos && pointsNum >= totalPoints;
     }
 }
